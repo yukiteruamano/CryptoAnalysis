@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interfaz Mistral AI</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input[type="file"], select, button {
+            margin-bottom: 15px;
+        }
+        #response {
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Interfaz para Mistral AI</h1>
+
+    <label for="model">Selecciona una IA:</label>
+    <select id="model">
+        <option value="mistral-large-latest">Mistral Large Latest</option>
+        <option value="mistral-small-latest">Mistral Small Latest</option>
+    </select>
+
+    <label for="file">Sube un archivo CSV:</label>
+    <input type="file" id="file" accept=".csv">
+
+    <button id="submit">Enviar</button>
+
+    <div id="response">
+        <h2>Respuesta desde Mistral:</h2>
+        <pre id="output"></pre>
+    </div>
+
+    <script>
+        document.getElementById('submit').addEventListener('click', async () => {
+            const model = document.getElementById('model').value;
+            const fileInput = document.getElementById('file');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert('Por favor, sube un archivo CSV.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('model', model);
+            formData.append('file', file);
+
+            try {
+                const response = await fetch('http://127.0.0.1:3000/api/chat', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error('Error en la comunicación con el servidor.');
+                }
+
+                const data = await response.json();
+                document.getElementById('output').textContent = data.response;
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('output').textContent = 'Error al obtener la respuesta.';
+            }
+        });
+    </script>
+
+</body>
+</html>

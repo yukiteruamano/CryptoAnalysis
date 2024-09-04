@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interfaz Mistral AI</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #question{
+            width: 75%;
+            height: 15px;
+        }
+        #output {
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            width: 100%;
+            height: 150px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Consulta a Mistral AI</h1>
+
+    <label for="model">Seleccionar IA:</label>
+    <select id="model">
+        <option value="mistral-large-latest">mistral-large-latest</option>
+        <option value="mistral-small-latest">mistral-small-latest</option>
+    </select>
+
+    <br><br>
+
+    <label for="question">Pregunta:</label>
+    <input type="text" id="question" placeholder="Escribe tu pregunta aquí" />
+
+    <br><br>
+
+    <button id="send">Enviar</button>
+
+    <h2>Respuesta:</h2>
+    <div id="output"></div>
+
+    <script>
+        document.getElementById('send').addEventListener('click', async () => {
+            const model = document.getElementById('model').value;
+            const question = document.getElementById('question').value;
+
+            const responseDiv = document.getElementById('output');
+            responseDiv.textContent = 'Cargando...';
+
+            try {
+                const response = await fetch('http://127.0.0.1:3000/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ model, question }),
+                });
+
+                const data = await response.json();
+                responseDiv.textContent = data.answer;
+            } catch (error) {
+                responseDiv.textContent = 'Error al obtener respuesta: ' + error.message;
+            }
+        });
+    </script>
+
+</body>
+</html>
